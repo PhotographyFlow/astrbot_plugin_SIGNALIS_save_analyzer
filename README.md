@@ -1,14 +1,20 @@
-# astrbot-plugin-helloworld
+# SIGNALIS 存档解密
 
-AstrBot 插件模板 / A template plugin for AstrBot plugin feature
+一个简单的SIGNALIS存档解密工具，上传cargo.png可获取存档内主要的游戏数据。 
+
+>[!INFO] 使用方法
+>/存档解密 txt：解密存档，发送纯文本结果
+/存档解密 img：解密存档，发送图片结果，图片排版模仿游戏结局显示（使用astrbot的t2i服务，建议本地部署）
+直接发送图片的同时带上指令，或者发送图片后引用并带上指令均可触发解析。
+
+/存档解密 help：发送指令帮助
 
 > [!NOTE]
-> This repo is just a template of [AstrBot](https://github.com/AstrBotDevs/AstrBot) Plugin.
-> 
-> [AstrBot](https://github.com/AstrBotDevs/AstrBot) is an agentic assistant for both personal and group conversations. It can be deployed across dozens of mainstream instant messaging platforms, including QQ, Telegram, Feishu, DingTalk, Slack, LINE, Discord, Matrix, etc. In addition, it provides a reliable and extensible conversational AI infrastructure for individuals, developers, and teams. Whether you need a personal AI companion, an intelligent customer support agent, an automation assistant, or an enterprise knowledge base, AstrBot enables you to quickly build AI applications directly within your existing messaging workflows.
+> 游戏存档保存在 ：
+游戏主目录\SIGNALIS_Data\save\<01-4，对应大存档插槽> 下。
+cargo1-4.png对应游戏中存档界面4个小插槽。
 
-# Supports
 
-- [AstrBot Repo](https://github.com/AstrBotDevs/AstrBot)
-- [AstrBot Plugin Development Docs (Chinese)](https://docs.astrbot.app/dev/star/plugin-new.html)
-- [AstrBot Plugin Development Docs (English)](https://docs.astrbot.app/en/dev/star/plugin-new.html)
+
+## Supports
+
