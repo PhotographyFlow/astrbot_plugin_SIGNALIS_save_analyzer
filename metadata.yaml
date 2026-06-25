@@ -1,6 +1,6 @@
 name: astrbot_plugin_SIGNALIS_save_decoder
 display_name: SIGNALIS 存档解密
 desc: SIGNALIS存档解密工具，上传cargo.png可获取存档情况。 
-version: v0.0.1
+version: v1.0.0
 author: David.z
 repo: https://github.com/PhotographyFlow/astrbot_plugin_SIGNALIS_save_decoder
