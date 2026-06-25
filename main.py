@@ -1,24 +1,73 @@
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
-from astrbot.api.star import Context, Star, register
+from astrbot.api.event import filter, AstrMessageEvent
+from astrbot.api.star import Context, Star
+from astrbot.api.message_components import Plain, Image, Reply
 from astrbot.api import logger
+from .init import init_plugin_data_dir
+from .analyser import analyser
+from .text_to_img import text_to_img
+import shutil
 
-@register("helloworld", "YourName", "一个简单的 Hello World 插件", "1.0.0")
+
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
+        # 初始化数据目录，并保存路径
+        self.plugin_data_path = init_plugin_data_dir(self.name)
+        logger.info(f"插件数据目录已就绪: {self.plugin_data_path}")
 
-    async def initialize(self):
-        """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
+    @filter.command("存档解密")
+    async def analyse_save_text(self, event: AstrMessageEvent):
+        """解析用户上传的存档图片，返回纯文本结果"""
+        result = analyse_save(self, event)
+        yield event.plain_result(result)
 
-    # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
-    @filter.command("helloworld")
-    async def helloworld(self, event: AstrMessageEvent):
-        """这是一个 hello world 指令""" # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
-        user_name = event.get_sender_name()
-        message_str = event.message_str # 用户发的纯文本消息字符串
-        message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
-        logger.info(message_chain)
-        yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
+    @filter.command("存档解密.img")
+    async def analyse_save_img(self, event: AstrMessageEvent):
+        """解析用户上传的存档图片，返回图片结果（使用t2i转换）"""
+        result = analyse_save(self, event)
+        # 测试发图功能（不对应实际数据）
+        img = await text_to_img(self,result)
+        yield event.image_result(img)
+
+    @filter.command("存档解密.help")
+    async def help_messaage(self, event: AstrMessageEvent):
+        """发送帮助消息"""
+        help = """
+SIGNALIS 存档解密指令：
+/存档解密：解密存档，发送纯文本结果
+/存档解密.img：解密存档，发送图片结果
+可以和存档图一起发送指令，或者引用图片并发送
+
+/存档解密.help：发送本帮助消息
+        """
+        yield event.plain_result(help)
 
     async def terminate(self):
-        """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
+        """当插件被卸载/停用时删除data文件夹。"""
+        shutil.rmtree(self.plugin_data_path)
+
+
+def analyse_save(self, event):
+    message_chain = event.get_messages()
+    img_url = None
+    for obj in message_chain:
+        if isinstance(obj, Image):
+            img_url = obj.url
+            break
+        elif isinstance(obj, Reply):
+            # 从被引用消息的 chain 中查找图片
+            if obj.chain:
+                for sub_obj in obj.chain:
+                    if isinstance(sub_obj, Image):
+                        img_url = sub_obj.url
+                        break
+            if img_url:
+                break
+    logger.info(f"提取到的图片 URL: {img_url}")
+    if img_url != None:
+        img_local_path = self.plugin_data_path / "temp_save.png"
+        result = analyser(img_url, img_local_path)
+    else:
+        result = "解析失败，没有收到存档图片。发送 /存档解密.help 获取指令帮助"
+
+    return result
