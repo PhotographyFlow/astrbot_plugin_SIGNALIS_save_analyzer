@@ -26,13 +26,13 @@ class MyPlugin(Star):
     @save_decoder.command("txt")
     async def analyse_save_text(self, event: AstrMessageEvent):
         """解析用户上传的存档图片，返回纯文本结果"""
-        result = analyse_save(self, event)
+        result = await analyse_save(self, event)
         yield event.plain_result(result)
 
     @save_decoder.command("img")
     async def analyse_save_img(self, event: AstrMessageEvent):
         """解析用户上传的存档图片，返回图片结果（使用t2i转换）"""
-        result = analyse_save(self, event)
+        result = await analyse_save(self, event)
         # 测试发图功能（不对应实际数据）
         img = await text_to_img(self, result)
         yield event.image_result(img)
@@ -64,7 +64,7 @@ def init_plugin_data_dir(plugin_name: str) -> Path:
 
 
 # 解密存档
-def analyse_save(self, event):
+async def analyse_save(self, event):
     message_chain = event.get_messages()
     img_url = None
     for obj in message_chain:
@@ -80,9 +80,9 @@ def analyse_save(self, event):
                         break
             if img_url:
                 break
-    if img_url != None:
+    if img_url is not None:
         img_local_path = self.plugin_data_path / "temp_save.png"
-        result = analyser(img_url, img_local_path)
+        result = await analyser(img_url, img_local_path)
     else:
         result = "解析失败，没有收到存档图片。发送 /存档解密 help 获取指令帮助"
 

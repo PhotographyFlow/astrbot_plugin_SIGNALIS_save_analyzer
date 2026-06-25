@@ -1,4 +1,5 @@
-import requests
+import aiohttp
+import aiofiles
 from .decoder import png_to_json
 import json
 
@@ -22,13 +23,14 @@ def is_valid_elster_status(s: str) -> bool:
     return all(p in ("0", "1", "2") for p in parts[:16])
 
 
-def analyser(url, local_path):
-    response = requests.get(url, stream=True)
-    response.raise_for_status()
-    with open(local_path, "wb") as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
-
+async def analyser(url, local_path):
+    # 异步下载文件
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            resp.raise_for_status()
+            async with aiofiles.open(local_path, "wb") as f:
+                async for chunk in resp.content.iter_chunked(8192):
+                    await f.write(chunk)
     json_str = png_to_json(path=local_path, indent=2)
     data = json.loads(json_str)
 
