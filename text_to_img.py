@@ -113,6 +113,7 @@ TMPL = """
 </html>
 """
 
+
 def parse_analyse(analyse: str) -> dict:
 
     # 将 analyse 字符串转换为模板需要的字典格式。
@@ -139,7 +140,7 @@ def parse_analyse(analyse: str) -> dict:
     return {"title": "解密结果", "stats": stats, "ending_name": ending_name}
 
 
-def text_to_img(self,analyse):
+def text_to_img(self, analyse):
     img = self.html_render(
         TMPL,
         parse_analyse(analyse),

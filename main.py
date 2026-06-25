@@ -54,12 +54,14 @@ SIGNALIS 存档解密指令：
         """当插件被卸载/停用时删除data文件夹。"""
         shutil.rmtree(self.plugin_data_path)
 
+
 # 初始化插件目录
 def init_plugin_data_dir(plugin_name: str) -> Path:
     """创建并返回插件数据目录"""
     data_path = Path(get_astrbot_data_path()) / "plugin_data" / plugin_name
     os.makedirs(data_path, exist_ok=True)
     return data_path
+
 
 # 解密存档
 def analyse_save(self, event):

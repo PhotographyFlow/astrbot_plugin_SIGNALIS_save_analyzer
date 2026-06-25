@@ -72,13 +72,13 @@ def analyser(url, local_path):
     else:
         regen_time_hms = "error"
 
-    # 计算高血量时间比    
+    # 计算高血量时间比
     if (
         isinstance(heal_T, (float))
         and isinstance(heal_TH, (float))
         and heal_TH < heal_T
     ):
-        healed_time_fraction =int(round(heal_TH / heal_T, 2)*100)
+        healed_time_fraction = int(round(heal_TH / heal_T, 2) * 100)
     else:
         healed_time_fraction = "error"
 
